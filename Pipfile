@@ -1,0 +1,13 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[packages]
+pyexcel-ods3 = "*"
+pyexcel = "*"
+pyexcel-io = "*"
+geopy = "*"
+
+[requires]
+python_version = "3"
