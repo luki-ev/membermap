@@ -30,7 +30,7 @@ def store_lookup_cache():
 
 def lookup(zip):
     if not zip in cache:
-        location = geolocator.geocode(zip + ', Germany')
+        location = geolocator.geocode(zip, country_codes='de')
         cache[zip] = {'zip': zip, 'lat': location.latitude, 'lon': location.longitude}
 
     return cache[zip]
