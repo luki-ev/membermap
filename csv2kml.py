@@ -19,21 +19,22 @@ def load_lookup_cache():
     with open(CACHEFILE, newline='') as cachefile:
         reader = csv.DictReader(cachefile)
         for row in reader:
-            cache[row['zip']] = row
+            cache[row['key']] = row
 
 def store_lookup_cache():
     with open(CACHEFILE, 'w', newline='') as cachefile:
-        fieldnames = ['zip', 'lat', 'lon']
+        fieldnames = ['key', 'lat', 'lon']
         writer = csv.DictWriter(cachefile, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(cache.values())
 
-def lookup(zip):
-    if not zip in cache:
-        location = geolocator.geocode(zip, country_codes='de')
-        cache[zip] = {'zip': zip, 'lat': location.latitude, 'lon': location.longitude}
+def lookup(country_code, zip):
+    cache_key = '{}_{}'.format(country_code, zip)
+    if not cache_key in cache:
+        location = geolocator.geocode(zip, country_codes=country_code)
+        cache[cache_key] = {'key': cache_key, 'lat': location.latitude, 'lon': location.longitude}
 
-    return cache[zip]
+    return cache[cache_key]
 
 def print_kml(placemarks_by_style):
     print('''\
@@ -99,7 +100,7 @@ def read_placemarks(file):
 
             if not row['style'] in placemarks_by_style:
                 placemarks_by_style[row['style']] = {}
-            coord = lookup(row['zip'])
+            coord = lookup(row['country_code'], row['zip'])
             coord_key = '{}_{}'.format(coord['lon'], coord['lat'])
             if not coord_key in placemarks_by_style[row['style']]:
                 placemarks_by_style[row['style']][coord_key] = {'names': []}
